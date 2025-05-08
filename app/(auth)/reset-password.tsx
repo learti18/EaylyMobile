@@ -2,19 +2,18 @@ import Logo from "@/assets/icons/Logo.svg";
 import ButtonHighlight from "@/components/buttons/ButtonHighlight";
 import IconInput from "@/components/inputs/IconInput";
 import { useRouter } from "expo-router";
-import { Eye, EyeSlash, Lock, User } from "phosphor-react-native";
+import { Eye, EyeSlash, Lock } from "phosphor-react-native";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Login = () => {
+const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   return (
@@ -31,25 +30,19 @@ const Login = () => {
           keyboardShouldPersistTaps="handled"
           className="px-4"
         >
-          <View className="flex-1 items-center justify-center">
+          <View className="flex-1 items-center justify-center px-6">
             <Logo width={110} height={110} />
 
             <View className="w-full max-w-sm mt-5 items-center">
               <View className="flex flex-col items-center justify-center gap-3 mb-8">
                 <Text className="text-4xl font-extrabold text-primary-500 text-center">
-                  Login to your account
+                  Reset Password
                 </Text>
                 <Text className="text-gray-500 text-center px-6">
-                  Please enter your details to access your account
+                  Please enter your new password to reset your account
                 </Text>
               </View>
-
-              <View className="flex flex-col gap-4 w-full items-center">
-                <IconInput
-                  icon={User}
-                  placeholder="Email"
-                  keyboardType="email-address"
-                />
+              <View className="flex flex-col gap-4 w-full">
                 <IconInput
                   icon={Lock}
                   placeholder="Password"
@@ -63,33 +56,26 @@ const Login = () => {
                   }
                   onRightIconPress={() => setShowPassword(!showPassword)}
                 />
-                <View className="flex-row items-center pr-2 justify-end w-full">
-                  <Pressable onPress={() => router.push("/forgot-password")}>
-                    <Text className="text-gray-500 font-semibold">
-                      Forgot Password?
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
+                <IconInput
+                  icon={Lock}
+                  placeholder="Confirm Password"
+                  secureTextEntry={!showPassword}
+                  rightIcon={
+                    showPassword ? (
+                      <Eye size={24} color="#9CA3AF" weight="bold" />
+                    ) : (
+                      <EyeSlash size={24} color="#9CA3AF" weight="bold" />
+                    )
+                  }
+                  onRightIconPress={() => setShowPassword(!showPassword)}
+                />
 
-              <ButtonHighlight
-                text="Login"
-                variant="primary"
-                className="mt-6"
-                onPress={() => {
-                  console.log("Login button pressed");
-                }}
-              />
-
-              <View className="flex-row items-center justify-center mt-6">
-                <Text className="text-gray-500">
-                  Don&apos;t have an account?
-                </Text>
-                <Pressable onPress={() => router.push("/register")}>
-                  <Text className="text-primary-500 font-semibold ml-2">
-                    Register
-                  </Text>
-                </Pressable>
+                <ButtonHighlight
+                  text="Reset Password"
+                  variant="primary"
+                  className="mt-6"
+                  onPress={() => router.push("/login")}
+                />
               </View>
             </View>
           </View>
@@ -99,4 +85,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

@@ -6,7 +6,7 @@ import {
 import { Redirect } from "expo-router";
 import React from "react";
 
-const isAuthenticated = true;
+const isAuthenticated = false;
 
 const index = () => {
   const [fontsLoaded] = useFonts({

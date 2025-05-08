@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import "./globals.css";
 
-const isAuthenticated = true;
+const isAuthenticated = false;
 
 export default function RootLayout() {
   return (

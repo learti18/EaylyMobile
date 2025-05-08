@@ -30,6 +30,13 @@ const AuthLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="reset-password"
+        options={{
+          title: "Reset Password",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };
