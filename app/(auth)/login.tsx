@@ -1,9 +1,13 @@
 import Logo from "@/assets/icons/Logo.svg";
 import ButtonHighlight from "@/components/buttons/ButtonHighlight";
 import IconInput from "@/components/inputs/IconInput";
+import { useAuth } from "@/hooks/useAuth";
+import { LoginFormData, loginSchema } from "@/schemas/auth/loginSchemta";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Eye, EyeSlash, Lock, User } from "phosphor-react-native";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -15,8 +19,28 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Login = () => {
+  const { login } = useAuth();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      await login(data.email, data.password);
+    } catch (err) {}
+  };
+
   return (
     <SafeAreaView className="bg-background-500 flex flex-1">
       <View className="absolute w-64 h-64 bg-primary-100 rounded-full -top-20 -right-20 opacity-50" />
@@ -49,10 +73,16 @@ const Login = () => {
                   icon={User}
                   placeholder="Email"
                   keyboardType="email-address"
+                  name="email"
+                  error={errors.email?.message}
+                  control={control}
                 />
                 <IconInput
                   icon={Lock}
                   placeholder="Password"
+                  name="password"
+                  control={control}
+                  error={errors.password?.message}
                   secureTextEntry={!showPassword}
                   rightIcon={
                     showPassword ? (
@@ -76,9 +106,7 @@ const Login = () => {
                 text="Login"
                 variant="primary"
                 className="mt-6"
-                onPress={() => {
-                  console.log("Login button pressed");
-                }}
+                onPress={handleSubmit(onSubmit)}
               />
 
               <View className="flex-row items-center justify-center mt-6">

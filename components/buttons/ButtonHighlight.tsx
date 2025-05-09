@@ -20,7 +20,7 @@ const ButtonHighlight = ({
   return (
     <TouchableHighlight
       underlayColor="#5c4eae"
-      className={`bg-primary-500 bg-primar rounded-2xl px-5 w-[320px] ${className}`}
+      className={`bg-primary-500 bg-primar rounded-2xl px-5 w-full ${className}`}
       onPress={props.onPress}
       {...props}
     >

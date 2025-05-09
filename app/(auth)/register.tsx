@@ -1,9 +1,16 @@
 import Logo from "@/assets/icons/Logo.svg";
 import ButtonHighlight from "@/components/buttons/ButtonHighlight";
 import IconInput from "@/components/inputs/IconInput";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  RegisterFormData,
+  registerSchema,
+} from "@/schemas/auth/registerSchemta";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Eye, EyeSlash, Lock, Phone, User } from "phosphor-react-native";
 import React, { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -15,9 +22,23 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Register = () => {
+  const { register } = useAuth();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const scrollViewRef = useRef(null);
+  const scrollViewRef = useRef<ScrollView | null>(null);
 
   const handleFocus = (y) => {
     scrollViewRef.current?.scrollTo({
@@ -62,15 +83,24 @@ const Register = () => {
                   icon={User}
                   placeholder="Email"
                   keyboardType="email-address"
+                  name="email"
+                  error={errors.email?.message}
+                  control={control}
                 />
                 <IconInput
                   icon={Phone}
                   placeholder="Phone Number"
                   keyboardType="phone-pad"
+                  name="phone"
+                  error={errors.phone?.message}
+                  control={control}
                 />
                 <IconInput
                   icon={Lock}
                   placeholder="Password"
+                  name="password"
+                  error={errors.password?.message}
+                  control={control}
                   secureTextEntry={!showPassword}
                   rightIcon={
                     showPassword ? (
@@ -84,6 +114,9 @@ const Register = () => {
                 <IconInput
                   icon={Lock}
                   placeholder="Confirm Password"
+                  name="confirmPassword"
+                  error={errors.confirmPassword?.message}
+                  control={control}
                   secureTextEntry={!showPassword}
                   rightIcon={
                     showPassword ? (
