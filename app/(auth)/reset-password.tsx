@@ -2,7 +2,7 @@ import Logo from "@/assets/icons/Logo.svg";
 import ButtonHighlight from "@/components/buttons/ButtonHighlight";
 import IconInput from "@/components/inputs/IconInput";
 import { useRouter } from "expo-router";
-import { User } from "phosphor-react-native";
+import { Eye, EyeSlash, Lock } from "phosphor-react-native";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   return (
@@ -28,34 +28,55 @@ const ForgotPassword = () => {
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
+          className="px-4"
         >
           <View className="flex-1 items-center justify-center px-6">
             <Logo width={110} height={110} />
 
-            <View className="w-full max-w-sm items-center mt-5">
+            <View className="w-full max-w-sm mt-5 items-center">
               <View className="flex flex-col items-center justify-center gap-3 mb-8">
                 <Text className="text-4xl font-extrabold text-primary-500 text-center">
-                  Forget Password
+                  Reset Password
                 </Text>
                 <Text className="text-gray-500 text-center px-6">
-                  Please enter your email to receive a password reset link
+                  Please enter your new password to reset your account
                 </Text>
               </View>
-
-              <View className="flex flex-col gap-4 w-full items-center">
+              <View className="flex flex-col gap-4 w-full">
                 <IconInput
-                  icon={User}
-                  placeholder="Email"
-                  keyboardType="email-address"
+                  icon={Lock}
+                  placeholder="Password"
+                  secureTextEntry={!showPassword}
+                  rightIcon={
+                    showPassword ? (
+                      <Eye size={24} color="#9CA3AF" weight="bold" />
+                    ) : (
+                      <EyeSlash size={24} color="#9CA3AF" weight="bold" />
+                    )
+                  }
+                  onRightIconPress={() => setShowPassword(!showPassword)}
+                />
+                <IconInput
+                  icon={Lock}
+                  placeholder="Confirm Password"
+                  secureTextEntry={!showPassword}
+                  rightIcon={
+                    showPassword ? (
+                      <Eye size={24} color="#9CA3AF" weight="bold" />
+                    ) : (
+                      <EyeSlash size={24} color="#9CA3AF" weight="bold" />
+                    )
+                  }
+                  onRightIconPress={() => setShowPassword(!showPassword)}
+                />
+
+                <ButtonHighlight
+                  text="Reset Password"
+                  variant="primary"
+                  className="mt-6"
+                  onPress={() => router.push("/login")}
                 />
               </View>
-
-              <ButtonHighlight
-                text="Next"
-                variant="primary"
-                className="mt-6"
-                onPress={() => router.push("/reset-password")}
-              />
             </View>
           </View>
         </ScrollView>
@@ -64,4 +85,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;
