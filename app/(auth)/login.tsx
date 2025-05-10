@@ -19,7 +19,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, isLoading } = useAuth();
   const {
     handleSubmit,
     control,
@@ -37,8 +37,10 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(data.email, data.password);
-    } catch (err) {}
+      await login(data);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   return (
@@ -106,6 +108,7 @@ const Login = () => {
                 text="Login"
                 variant="primary"
                 className="mt-6"
+                isLoading={isLoading}
                 onPress={handleSubmit(onSubmit)}
               />
 

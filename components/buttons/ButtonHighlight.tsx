@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ActivityIndicator,
   Text,
   TouchableHighlight,
   TouchableHighlightProps,
@@ -9,12 +10,14 @@ interface ButtonHighlightProps extends TouchableHighlightProps {
   text: string;
   variant?: "primary" | "secondary";
   className?: string;
+  isLoading?: boolean;
 }
 
 const ButtonHighlight = ({
   text,
   variant = "primary",
   className,
+  isLoading = false,
   ...props
 }: ButtonHighlightProps) => {
   return (
@@ -24,9 +27,13 @@ const ButtonHighlight = ({
       onPress={props.onPress}
       {...props}
     >
-      <Text className="text-white text-center font-semibold text-xl leading-[56px]">
-        {text}
-      </Text>
+      {isLoading ? (
+        <ActivityIndicator className="py-5 text-white" />
+      ) : (
+        <Text className="text-white text-center font-semibold text-xl leading-[56px]">
+          {text}
+        </Text>
+      )}
     </TouchableHighlight>
   );
 };

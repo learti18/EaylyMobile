@@ -80,6 +80,13 @@ const AppTabLayout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="index"
+        options={{
+          href: null,
+        }}
+        redirect={true}
+      />
     </Tabs>
   );
 };

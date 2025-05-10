@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   RegisterFormData,
   registerSchema,
-} from "@/schemas/auth/registerSchemta";
+} from "@/schemas/auth/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Eye, EyeSlash, Lock, Phone, User } from "phosphor-react-native";
@@ -22,7 +22,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Register = () => {
-  const { register } = useAuth();
   const {
     control,
     handleSubmit,
@@ -39,6 +38,16 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView | null>(null);
+  const { register, isLoading } = useAuth();
+
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      await register(data);
+    } catch (error) {
+      console.error(error.response?.data?.message);
+      console.error(error.message);
+    }
+  };
 
   const handleFocus = (y) => {
     scrollViewRef.current?.scrollTo({
@@ -133,9 +142,8 @@ const Register = () => {
                 text="Create Account"
                 variant="primary"
                 className="mt-6"
-                onPress={() => {
-                  console.log("Register button pressed");
-                }}
+                isLoading={isLoading}
+                onPress={handleSubmit(onSubmit)}
               />
 
               <View className="flex-row items-center justify-center mt-6">

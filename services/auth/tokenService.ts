@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import api from "./api";
+import { getDeviceId } from "./deviceService";
 
 const getAccessToken = async (): Promise<string | null> => {
   return await AsyncStorage.getItem("accessToken");
@@ -34,7 +35,11 @@ const refreshToken = async (onLogout: () => Promise<void>) => {
   }
 
   try {
-    const { data } = await api.post("/auth/refresh-token", { refreshToken });
+    const deviceId = await getDeviceId();
+    const { data } = await api.post("/mobile/auth/refresh-token", {
+      refreshToken,
+      deviceId,
+    });
     const { accessToken, refreshToken: newRefreshToken } = data;
     await setTokens(accessToken, newRefreshToken);
   } catch (error) {
