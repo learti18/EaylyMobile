@@ -1,3 +1,4 @@
+import Star from "@/assets/icons/Star.svg";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, Platform, Text, TouchableOpacity, View } from "react-native";
@@ -33,10 +34,13 @@ const RestaurantCard = ({ id, name, imageUrl }: Restaurant) => {
           style={{ borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
         />
         <View className="p-4">
-          <Text className="text-xl font-bold">{name}</Text>
-          <View className="flex-row items-center justify-between mt-2">
-            <Text className="text-gray-400">24min</Text>
-            <Text className="text-gray-400">4.5</Text>
+          <Text className="text-2xl font-semibold capitalize">{name}</Text>
+          <View className="flex-row items-center gap-2 mt-2">
+            <Text className="text-gray-400">24min •</Text>
+            <View className="flex-row items-center">
+              <Star width={20} height={20} />
+              <Text className="text-gray-400">4.5</Text>
+            </View>
           </View>
         </View>
       </View>

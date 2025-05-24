@@ -1,10 +1,13 @@
 import Star from "@/assets/icons/Star.svg";
+import { useFetch } from "@/hooks/useFetch";
+import { addToCart } from "@/services/cart/cartService";
 import { Heart } from "phosphor-react-native";
 import React, { useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 interface FoodProps {
+  id: number;
   name: string;
   imageUrl: string;
   averagePreparationTime: number;
@@ -14,6 +17,7 @@ interface FoodProps {
 }
 
 const FoodCard = ({
+  id,
   name,
   imageUrl,
   averagePreparationTime,
@@ -23,23 +27,35 @@ const FoodCard = ({
 }: FoodProps) => {
   const [favorite, setFavorite] = useState(isFavorite);
   const [dollars, cents] = price.toFixed(2).split(".");
+  const {
+    data: cartData,
+    loading: isAddingToCart,
+    refetch: refetchAddToCart,
+    error: addToCartError,
+  } = useFetch(() => addToCart(id, 1), false);
 
-  const handleAddToCart = () => {
-    Toast.show({
-      type: "success",
-      text1: "Added to cart",
-      text2: `${name} has been added to your cart.`,
-      position: "bottom",
-      visibilityTime: 2000,
-      autoHide: true,
-    });
+  const handleAddToCart = async () => {
+    await refetchAddToCart();
+    if (addToCartError) {
+      Toast.show({
+        type: "error",
+        text1: "Error adding to cart",
+        text2: addToCartError.message,
+      });
+    } else {
+      Toast.show({
+        type: "success",
+        text1: "Added to cart",
+        text2: `${name} has been added to your cart.`,
+      });
+    }
   };
 
   return (
     <Pressable
       className="relative bg-white rounded-[34.58px] py-2 px-5"
       style={{
-        flex: 1, // This will make the card take up equal space
+        flex: 1,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.08,
