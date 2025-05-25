@@ -1,25 +1,48 @@
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+
+import toastConfig from "@/components/toastConfig";
 import "./globals.css";
 
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: 1000 * 60 * 60 * 24,
+    },
+  },
+});
+
+const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+});
 export default function RootLayout() {
   const { hasSeenOnboarding, isLoading: onboardingLoading } = useOnboarding();
 
   return (
-    <AuthProvider>
-      <InnerLayout
-        hasSeenOnboarding={hasSeenOnboarding}
-        isLoading={onboardingLoading}
-      />
-    </AuthProvider>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister }}
+    >
+      <AuthProvider>
+        <InnerLayout
+          hasSeenOnboarding={hasSeenOnboarding}
+          isLoading={onboardingLoading}
+        />
+      </AuthProvider>
+    </PersistQueryClientProvider>
   );
 }
 
@@ -63,20 +86,15 @@ const InnerLayout = ({ hasSeenOnboarding, isLoading }: InnerLayoutProps) => {
   }
 
   return (
-    <>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(app)" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(onboarding)" />
-      </Stack>
-      <Toast
-        position="top"
-        visibilityTime={2000}
-        autoHide
-        topOffset={50}
-        bottomOffset={40}
-        style={{ zIndex: 9999 }}
-      />
-    </>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(app)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(onboarding)" />
+        </Stack>
+        <Toast config={toastConfig} />
+      </>
+    </GestureHandlerRootView>
   );
 };

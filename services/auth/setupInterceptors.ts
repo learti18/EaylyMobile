@@ -17,7 +17,6 @@ export const setupInterceptors = (onLogout: () => Promise<void>) => {
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
-      config.headers["X-Client"] = "mobile";
       return config;
     },
     (error) => {
@@ -34,6 +33,8 @@ export const setupInterceptors = (onLogout: () => Promise<void>) => {
 
         try {
           await refreshToken(onLogout);
+          const newAccessToken = await AsyncStorage.getItem("accessToken");
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         } catch (e) {
           return Promise.reject(e);

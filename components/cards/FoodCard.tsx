@@ -1,6 +1,5 @@
 import Star from "@/assets/icons/Star.svg";
-import { useFetch } from "@/hooks/useFetch";
-import { addToCart } from "@/services/cart/cartService";
+import { useAddToCart } from "@/queries/useCart";
 import { Heart } from "phosphor-react-native";
 import React, { useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
@@ -27,26 +26,28 @@ const FoodCard = ({
 }: FoodProps) => {
   const [favorite, setFavorite] = useState(isFavorite);
   const [dollars, cents] = price.toFixed(2).split(".");
+
   const {
-    data: cartData,
-    loading: isAddingToCart,
-    refetch: refetchAddToCart,
-    error: addToCartError,
-  } = useFetch(() => addToCart(id, 1), false);
+    mutate: addToCartMutation,
+    isPending: isAddingToCart,
+    isError,
+  } = useAddToCart();
 
   const handleAddToCart = async () => {
-    await refetchAddToCart();
-    if (addToCartError) {
+    try {
+      addToCartMutation({
+        foodId: id,
+        quantity: 1,
+      });
+    } catch (error) {
+      console.error("Error adding to cart:", error);
       Toast.show({
         type: "error",
-        text1: "Error adding to cart",
-        text2: addToCartError.message,
-      });
-    } else {
-      Toast.show({
-        type: "success",
-        text1: "Added to cart",
-        text2: `${name} has been added to your cart.`,
+        text1: "Failed to add item to cart",
+        text2:
+          typeof error === "object" && error !== null && "message" in error
+            ? (error as { message?: string }).message
+            : "An error occurred while adding the item.",
       });
     }
   };
@@ -61,7 +62,7 @@ const FoodCard = ({
         shadowOpacity: 0.08,
         shadowRadius: 20,
         elevation: 2,
-        maxWidth: "48%", // This ensures we have room for the gap
+        maxWidth: "48%",
       }}
     >
       <TouchableOpacity
@@ -105,7 +106,15 @@ const FoodCard = ({
           className="bg-black flex items-center justify-center px-3 py-1 rounded-[9px]"
           style={{ minWidth: 36, height: 36 }}
         >
-          <Text className="text-white text-2xl font-bold leading-none">+</Text>
+          {isAddingToCart ? (
+            <Text className="text-white text-lg font-bold leading-none">
+              ...
+            </Text>
+          ) : (
+            <Text className="text-white text-2xl font-bold leading-none">
+              +
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </Pressable>
