@@ -1,17 +1,19 @@
+import CategoryButton from '@/components/buttons/CategoryButton';
 import FoodCard from '@/components/cards/FoodCard';
 import Header from '@/components/generic/header';
 import { useFetchFavourites } from '@/queries/useFavourite';
+import { useGetRestaurantCategories } from '@/queries/useRestaurant';
 import {
   MagnifyingGlass
 } from 'phosphor-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  FlatList,
   SafeAreaView,
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 
@@ -19,13 +21,17 @@ const FavoritesScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>('All');
 
-  const categories = [
-    { name: 'All', icon: '✨', color: 'bg-purple-100' },
-    { name: 'Pizza', icon: '🍕', color: 'bg-orange-100' },
-    { name: 'Asian', icon: '🍣', color: 'bg-red-100' },
-  ];
-
+  const { data: restaurantCategories } = useGetRestaurantCategories();
   const { data: favouriteItems } = useFetchFavourites();
+
+  const categories = [
+    ...(restaurantCategories ?? []),
+    {
+      id: 0,
+      name: 'All',
+      imageUrl: '',
+    },
+  ];
 
   const mappedFavoriteItems = useMemo(() => {
     return favouriteItems?.map((restaurant: any) => ({
@@ -78,19 +84,21 @@ const FavoritesScreen = () => {
         </View>
 
         {/* Categories Scroll */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 pt-1 pb-5 bg-gray-100">
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.name}
-              onPress={() => setSelectedCategory(category.name)}
-              className={`flex-row items-center px-4 py-2.5 rounded-2xl mr-2.5 shadow-sm 
-                          ${category.color} 
-                          ${selectedCategory === category.name ? 'border-2 border-purple-600' : 'border border-transparent'}`}>
-              <Text className={`text-sm font-medium ${selectedCategory === category.name ? 'text-purple-700' : 'text-gray-700'}`}>{category.name}</Text>
-              <Text className="text-base ml-1.5">{category.icon}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <FlatList
+          data={categories}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          renderItem={({ item }) => (
+            <CategoryButton
+              category={item}
+              isActive={selectedCategory === item.name}
+              onPress={() => setSelectedCategory(item.name)}
+            />
+          )}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 20, paddingRight: 12 }}
+          className="flex-grow"
+        />
 
         {/* Main Content Area */}
         <View className=" z-10 pt-2.5">

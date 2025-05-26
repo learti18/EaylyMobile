@@ -2,6 +2,7 @@ import Hotdog from "@/assets/icons/Hotdog.svg";
 import Icecream from "@/assets/icons/Icecream.svg";
 import Pizza from "@/assets/icons/Pizza.svg";
 import Zongzi from "@/assets/icons/Zongzi.svg";
+
 import React, { JSX } from "react";
 import { Dimensions, Text, TouchableHighlight, View } from "react-native";
 
@@ -65,6 +66,11 @@ const CATEGORY_STYLES: Record<
     bg: "#B9E2CA",
     text: "#00732F",
     icon: <Hotdog width={40} height={40} />,
+  },
+  All: {
+    bg: "#E5E7EB",
+    text: "#4B5563",
+    icon: <View className="w-4 h-4 rounded-full bg-gray-300" />,
   },
 };
 

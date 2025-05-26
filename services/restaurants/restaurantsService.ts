@@ -42,10 +42,7 @@ export const getRestaurantCategories = async (): Promise<Category[]> => {
 
     if (response.status !== 200) {
       // @ts-ignore
-      throw new Error(
-        "Failed to fetch restaurant categories",
-        response.statusText
-      );
+      throw new Error("Failed to fetch restaurant categories", response.statusText);
     }
     const data = await response.data;
     return data;
