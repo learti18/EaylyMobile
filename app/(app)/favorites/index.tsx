@@ -1,4 +1,5 @@
 import Header from '@/components/generic/header';
+import { useFetchFavourites } from '@/queries/useFavourite';
 import { FavoriteItem } from '@/types/favourite-items';
 import {
   Heart,
@@ -6,7 +7,7 @@ import {
   Plus,
   Star
 } from 'phosphor-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -62,97 +63,38 @@ const FavoritesScreen = () => {
     // { name: 'Blue', icon: '🔵', color: 'bg-blue-100' },  // Commenting out as no items exist
   ];
 
-  const favoriteItemsData: FavoriteItem[] = [
-    {
-      id: '1',
-      name: 'Chicken Hell',
-      image: 'https://picsum.photos/150/150?random=1',
-      tag: 'Healthy',
-      tagColor: '#E0FFE0',
-      time: '24min',
-      rating: 4.8,
-      price: 12.99,
-      category: 'Pizza',
-    },
-    {
-      id: '2',
-      name: 'Swe Dish',
-      image: 'https://picsum.photos/150/150?random=2',
-      tag: 'Trending',
-      tagColor: '#FFE0E0',
-      time: '34min',
-      rating: 4.9,
-      price: 19.99,
-      category: 'Pizza',
-    },
-     {
-      id: '3',
-      name: 'Another Dish',
-      image: 'https://picsum.photos/150/150?random=3',
-      time: '15min',
-      rating: 4.5,
-      price: 9.50,
-      category: 'Asian',
-    },
-    {
-      id: '4',
-      name: 'Special Meal',
-      image: 'https://picsum.photos/150/150?random=4',
-      tag: 'New',
-      tagColor: '#E6E6FA', 
-      time: '40min',
-      rating: 4.7,
-      price: 22.00,
-      category: 'Asian',
-    },
-    {
-      id: '5',
-      name: 'Swe Dish',
-      image: 'https://picsum.photos/150/150?random=5',
-      tag: 'Trending',
-      tagColor: '#FFE0E0',
-      time: '34min',
-      rating: 4.9,
-      price: 19.99,
-      category: 'Pizza',
-    },
-     {
-      id: '6',
-      name: 'Another Dish',
-      image: 'https://picsum.photos/150/150?random=6',
-      time: '15min',
-      rating: 4.5,
-      price: 9.50,
-      category: 'Asian',
-    },
-    {
-      id: '7',
-      name: 'Special Meal',
-      image: 'https://picsum.photos/150/150?random=7',
-      tag: 'New',
-      tagColor: '#E6E6FA', 
-      time: '40min',
-      rating: 4.7,
-      price: 22.00,
-      category: 'Asian',
-    },
-  ];
+  const { data: favouriteItems, isLoading, isError } = useFetchFavourites();
+
+  const mappedFavoriteItems = useMemo(() => {
+    return favouriteItems?.map((restaurant: any) => ({
+      id: restaurant.id.toString(),
+      name: restaurant.name,
+      image: restaurant.imageUrl,
+      category: restaurant.category,
+      price: restaurant.price,
+      time: "30 min", // You might want to get this from somewhere else
+      rating: 4.5 // You might want to get this from somewhere else
+    }));
+  }, [favouriteItems]);
 
   const filteredFavoriteItems = useMemo(() => {
-    let items = favoriteItemsData;
+    let items = mappedFavoriteItems;
 
     if (selectedCategory && selectedCategory !== 'All') {
-      items = items.filter(item => item.category === selectedCategory);
+      items = items?.filter((item: any) => item.category === selectedCategory);
     }
 
     if (searchText) {
-      items = items.filter(item => 
+      items = items?.filter((item: any) => 
         item.name.toLowerCase().includes(searchText.toLowerCase())
       );
     }
     return items;
-  }, [searchText, selectedCategory, favoriteItemsData]);
+  }, [searchText, selectedCategory, mappedFavoriteItems]);
 
+  useEffect(() => {
+    console.log(favouriteItems);
+  }, [favouriteItems]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
@@ -191,8 +133,8 @@ const FavoritesScreen = () => {
         <View className=" z-10 pt-2.5">
           <Text className="text-2xl font-bold text-gray-800 px-5 pt-2.5 pb-4">Most Favourite</Text>
           <View className="flex-row flex-wrap justify-between px-5 pt-1">
-            {filteredFavoriteItems.length > 0 ? (
-              filteredFavoriteItems.map(item => (
+            {filteredFavoriteItems?.length && filteredFavoriteItems?.length > 0 ? (
+              filteredFavoriteItems?.map((item: FavoriteItem) => (
                 <FavoriteItemCard key={item.id} item={item} />
               ))
             ) : (
