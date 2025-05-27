@@ -38,7 +38,7 @@ const RestaurantDetails = () => {
 
       {/* searchbar and filtering*/}
       <View className="flex-row gap-x-4 mt-8 mb-8">
-        <SearchBar placeholder="Search for food" value="" />
+        <SearchBar placeholder="Search for food" value="" onChangeText={() => {}} />
         <TouchableOpacity
           onPress={() => console.log("pressed")}
           className="items-center justify-center px-4 rounded-2xl bg-primary-500"
@@ -50,7 +50,7 @@ const RestaurantDetails = () => {
   );
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-background-100">
+    <SafeAreaView className="flex-1 bg-background-100">
       {foodsLoading ? (
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#6C5FBC" />
@@ -64,7 +64,7 @@ const RestaurantDetails = () => {
           data={foods}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
-          renderItem={({ item }) => <FoodCard {...item} />}
+          renderItem={({ item }) => <FoodCard {...item} restaurantId={id} />}
           contentContainerStyle={{
             padding: 20,
           }}

@@ -1,38 +1,34 @@
 import Star from "@/assets/icons/Star.svg";
 import ButtonHighlight from "@/components/buttons/ButtonHighlight";
 import { useAddToCart } from "@/queries/useCart";
+import { useGetFoodById } from "@/queries/useFood";
 import { router, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, Heart } from "phosphor-react-native";
 import { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+
+interface Ingridient {
+    id: number;
+    name: string;
+}
 
 function DetailsScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
-    const food = {
-        id: Number(id),
-        name: "Chicken Hell",
-        imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-        averagePreparationTime: 24,
-        rating: 4.8,
-        kcal: 356,
-        isFavorite: false,
-        price: 12.99,
-        description:
-            "Chicken Hell Is The Healthies Chicken For Gym Guys And Girls. It Promote Healthy Life Style And Make Your Energy Booster.",
-        ingredients: [
-            { id: 1, name: "Onion", icon: require("@/assets/icons/Donut.svg") },
-            { id: 2, name: "Carrot", icon: require("@/assets/icons/Hotdog.svg") },
-            { id: 3, name: "Tomato", icon: require("@/assets/icons/Pizza.svg") },
-            { id: 4, name: "Cucumber", icon: require("@/assets/icons/Pizza.svg") },
-        ],
-    };
-
+    const { id, restaurantId } = useLocalSearchParams<{ id: string, restaurantId: string }>();
+    const { data: food, isLoading, error } = useGetFoodById(Number(id), Number(restaurantId));
     const [quantity, setQuantity] = useState(1);
-    const [favorite, setFavorite] = useState(food.isFavorite);
+    const [favorite, setFavorite] = useState(false);
     const { mutate: addToCart, isPending } = useAddToCart();
 
+    if (isLoading) {
+        return <ActivityIndicator size="large" color="#6C5FBC" />;
+    }
+
+    if (error || !food) {
+        return <Text>Error: {error?.message || "Food not found"}</Text>;
+    }
+
     function handleAddToCart() {
-        addToCart({ foodId: food.id, quantity });
+        addToCart({ foodId: food!.id, quantity });
     }
 
     function handleIncrease() {
@@ -47,13 +43,13 @@ function DetailsScreen() {
         setFavorite((f) => !f);
     }
 
-    function renderIngredient(ingredient: { id: number; name: string; icon: any }) {
+    function renderIngredient(ingredient: Ingridient) {
         return (
             <View
                 key={ingredient.id}
                 className="bg-gray-100 rounded-xl p-2.5 mr-2.5"
             >
-                <Image source={ingredient.icon} className="w-8 h-8" />
+                <Text className="text-gray-600">{ingredient.name}</Text>
             </View>
         );
     }
@@ -106,20 +102,20 @@ function DetailsScreen() {
                         <Text className="text-gray-400 text-base">{food.averagePreparationTime}min</Text>
                         <Text className="text-gray-400 text-base mx-2">•</Text>
                         <Star width={18} height={18} />
-                        <Text className="text-gray-400 text-base ml-1">{food.rating}</Text>
+                        <Text className="text-gray-400 text-base ml-1">4.5</Text>
                         <Text className="text-gray-400 text-base mx-2">•</Text>
-                        <Text className="text-red-400 text-base">{food.kcal} Kcal</Text>
+                        <Text className="text-red-400 text-base">320 Kcal</Text>
                     </View>
                     <View className="mb-3">
                         <View className="self-start bg-[#F6C768] rounded-md px-2.5 py-0.5 mb-2">
                             <Text className="text-[#7C5C00] font-bold text-sm">Healthy</Text>
                         </View>
                         <Text className="font-bold text-lg mb-1 text-[#22223E]">Description</Text>
-                        <Text className="text-gray-400 text-base leading-6">{food.description}</Text>
+                        <Text className="text-gray-400 text-base leading-6">{food.type}</Text>
                     </View>
                     <Text className="font-bold text-lg mb-2 text-[#22223E]">Ingredients</Text>
                     <View className="flex-row mb-6">
-                        {food.ingredients.map(renderIngredient)}
+                        {food.ingridients.map(renderIngredient)}
                     </View>
                     <View className="flex-row items-center justify-between mt-4">
                         <Text className="text-4xl font-bold text-[#22223E]">

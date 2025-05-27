@@ -43,6 +43,7 @@ const FavoritesScreen = () => {
       averagePreparationTime: restaurant.averagePreparationTime,
       type: restaurant.type,
       isFavorite: true,
+      restaurantId: restaurant.id,
     }));
   }, [favouriteItems]);
 
@@ -108,6 +109,7 @@ const FavoritesScreen = () => {
               filteredFavoriteItems?.map((item: Food) => (
                 <FoodCard
                   key={item.id}
+                  restaurantId={item.restaurantId}
                   id={item.id}
                   name={item.name}
                   imageUrl={item.imageUrl}

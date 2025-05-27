@@ -29,7 +29,9 @@ interface Food {
   type: string;
   isFavorite: boolean;
   ingridients: Ingridient[];
+  restaurantId: number;
 }
+
 interface Ingridient {
   id: number;
   name: string;

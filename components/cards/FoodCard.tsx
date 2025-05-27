@@ -14,6 +14,7 @@ interface FoodProps {
   type: string;
   isFavorite: boolean;
   price: number;
+  restaurantId: number;
 }
 
 const FoodCard = ({
@@ -24,6 +25,7 @@ const FoodCard = ({
   type,
   isFavorite,
   price,
+  restaurantId,
 }: FoodProps) => {
   const [favorite, setFavorite] = useState(isFavorite);
   const [dollars, cents] = price.toFixed(2).split(".");
@@ -56,7 +58,7 @@ const FoodCard = ({
   return (
     <Pressable
       className="relative bg-white rounded-[34.58px] py-2 px-5"
-      onPress={() => router.push(`/home/details/${id}`)}
+      onPress={() => router.push(`/home/details/${id}?restaurantId=${restaurantId}`)}
       style={{
         flex: 1,
         shadowColor: "#000",
