@@ -1,5 +1,6 @@
 import Star from "@/assets/icons/Star.svg";
 import { useAddToCart } from "@/queries/useCart";
+import { router } from "expo-router";
 import { Heart } from "phosphor-react-native";
 import React, { useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
@@ -55,6 +56,7 @@ const FoodCard = ({
   return (
     <Pressable
       className="relative bg-white rounded-[34.58px] py-2 px-5"
+      onPress={() => router.push(`/home/details/${id}`)}
       style={{
         flex: 1,
         shadowColor: "#000",
