@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await setTokens(responseData.token, responseData.refreshToken);
       setIsAuthenticated(true);
 
-      router.push("/home");
+      router.replace("/home");
     } catch (error) {
       Toast.show({
         type: "error",
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await setTokens(responseData.token, responseData.refreshToken);
       setIsAuthenticated(true);
 
-      router.push("/home");
+      router.replace("/home");
     } catch (error) {
       Toast.show({
         type: "error",
