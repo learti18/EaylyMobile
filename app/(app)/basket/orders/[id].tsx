@@ -93,9 +93,8 @@ const OrderDetails = () => {
               </View>
             </View>
             <View
-              className={`px-3 py-1 rounded-full ${getOrderStatusColor(
-                order.status || order.orderStatus
-              )}`}
+              className="px-3 py-1 rounded-full"
+              style={getOrderStatusColor(order.status || order.orderStatus)}
             >
               <Text className="text-sm font-medium capitalize">
                 {order.status || order.orderStatus}
@@ -113,9 +112,8 @@ const OrderDetails = () => {
               </Text>
               {order.paymentStatus && (
                 <View
-                  className={`px-3 py-1 rounded-full ${getPaymentStatusColor(
-                    order.paymentStatus
-                  )}`}
+                  className="px-3 py-1 rounded-full"
+                  style={getPaymentStatusColor(order.paymentStatus)}
                 >
                   <Text className="text-sm font-medium capitalize">
                     {order.paymentStatus}

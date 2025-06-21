@@ -148,14 +148,12 @@ export default function AddressForm({
     }
   };
 
-  // Handler for when user taps on map
   const handleMapPress = async (e: any) => {
     const newCoords = e.nativeEvent.coordinate;
     setPosition(newCoords);
     await updateAddressFromCoords(newCoords);
   };
 
-  // Handle input changes
   const handleInputChange = (field: keyof typeof formValues, value: string) => {
     setFormValues((prev) => ({ ...prev, [field]: value }));
     setValue(field, value);

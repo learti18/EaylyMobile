@@ -1,31 +1,33 @@
 export const getOrderStatusColor = (status: string) => {
-  switch (status?.toLowerCase()) {
+  switch (status.toLowerCase()) {
     case "completed":
-      return "bg-green-100 text-green-700";
+      return { backgroundColor: "#dcfce7", color: "#15803d" }; // green
     case "pending":
-      return "bg-yellow-100 text-yellow-700";
+      return { backgroundColor: "#fef3c7", color: "#d97706" }; // yellow
     case "cancelled":
-      return "bg-red-100 text-red-700";
+      return { backgroundColor: "#fecaca", color: "#dc2626" }; // red
     case "preparing":
-      return "bg-blue-100 text-blue-700";
+      return { backgroundColor: "#dbeafe", color: "#2563eb" }; // blue
     case "ready":
-      return "bg-purple-100 text-purple-700";
+      return { backgroundColor: "#e9d5ff", color: "#9333ea" }; // purple
+    case "confirmed":
+      return { backgroundColor: "#e0f2fe", color: "#0891b2" }; // cyan
     default:
-      return "bg-gray-100 text-gray-700";
+      return { backgroundColor: "#f3f4f6", color: "#374151" }; // gray
   }
 };
 
 export const getPaymentStatusColor = (status: string) => {
-  switch (status?.toLowerCase()) {
+  switch (status.toLowerCase()) {
     case "paid":
-      return "bg-green-100 text-green-700";
+      return { backgroundColor: "#dcfce7", color: "#15803d" }; // green
     case "pending":
-      return "bg-yellow-100 text-yellow-700";
+      return { backgroundColor: "#fef3c7", color: "#d97706" }; // yellow
     case "failed":
-      return "bg-red-100 text-red-700";
+      return { backgroundColor: "#fecaca", color: "#dc2626" }; // red
     case "refunded":
-      return "bg-orange-100 text-orange-700";
+      return { backgroundColor: "#fed7aa", color: "#ea580c" }; // orange
     default:
-      return "bg-gray-100 text-gray-700";
+      return { backgroundColor: "#f3f4f6", color: "#374151" }; // gray
   }
 };

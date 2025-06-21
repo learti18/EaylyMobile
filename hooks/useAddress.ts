@@ -12,31 +12,33 @@ export const useAddress = (reset: UseFormReset<AddressFormData>) => {
   const [isAddingNewAddress, setIsAddingNewAddress] = useState<boolean>(false);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState<boolean>(true);
 
+  const fetchAddresses = async () => {
+    try {
+      setIsLoadingAddresses(true);
+      const response = await api.get<Address[]>("/user/addresses");
+      setAddresses(response.data || []);
+      const defaultAddress = response.data?.find(
+        (address) => address.isDefault
+      );
+      setSelectedAddressId(
+        defaultAddress?.id || response.data?.[0]?.id || null
+      );
+      if (!response.data?.length) setIsAddingNewAddress(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to load addresses",
+        text2:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while loading addresses.",
+      });
+    } finally {
+      setIsLoadingAddresses(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAddresses = async () => {
-      try {
-        const response = await api.get<Address[]>("/user/addresses");
-        setAddresses(response.data || []);
-        const defaultAddress = response.data?.find(
-          (address) => address.isDefault
-        );
-        setSelectedAddressId(
-          defaultAddress?.id || response.data?.[0]?.id || null
-        );
-        if (!response.data?.length) setIsAddingNewAddress(true);
-      } catch (error) {
-        Toast.show({
-          type: "error",
-          text1: "Failed to load addresses",
-          text2:
-            error instanceof Error
-              ? error.message
-              : "An error occurred while loading addresses.",
-        });
-      } finally {
-        setIsLoadingAddresses(false);
-      }
-    };
     fetchAddresses();
   }, []);
 
@@ -51,6 +53,7 @@ export const useAddress = (reset: UseFormReset<AddressFormData>) => {
       setAddresses((prev) => [...prev, newAddress]);
       setSelectedAddressId(newAddress.id);
       setIsAddingNewAddress(false);
+      fetchAddresses();
       reset();
       Toast.show({ type: "success", text1: "Address added successfully" });
     } catch (error) {
@@ -65,6 +68,43 @@ export const useAddress = (reset: UseFormReset<AddressFormData>) => {
     }
   };
 
+  const onDeleteAddress = async (addressId: number) => {
+    try {
+      await api.delete(`/user/addresses/${addressId}`);
+
+      fetchAddresses();
+
+      if (selectedAddressId === addressId) {
+        const remainingAddresses = addresses.filter(
+          (address) => address.id !== addressId
+        );
+        if (remainingAddresses.length > 0) {
+          const defaultAddress = remainingAddresses.find(
+            (address) => address.isDefault
+          );
+          setSelectedAddressId(defaultAddress?.id || remainingAddresses[0].id);
+        } else {
+          setSelectedAddressId(null);
+          setIsAddingNewAddress(true);
+        }
+      }
+
+      Toast.show({
+        type: "success",
+        text1: "Address deleted successfully",
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to delete address",
+        text2:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while deleting the address.",
+      });
+    }
+  };
+
   return {
     addresses,
     selectedAddressId,
@@ -73,5 +113,6 @@ export const useAddress = (reset: UseFormReset<AddressFormData>) => {
     setIsAddingNewAddress,
     handleAddressSelect,
     onAddressSubmit,
+    onDeleteAddress,
   };
 };

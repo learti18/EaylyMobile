@@ -30,8 +30,10 @@ export default function Index() {
   const [isCreatingCheckout, setIsCreatingCheckout] = useState<boolean>(false);
   const [paymentSheetReady, setPaymentSheetReady] = useState<boolean>(false);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const [paymentInitFailed, setPaymentInitFailed] = useState(false);
   const [initializingPayment, setInitializingPayment] =
     useState<boolean>(false);
+
   const { refetch: refetchCart } = useFetchCart();
   const {
     control,
@@ -61,6 +63,7 @@ export default function Index() {
     setIsAddingNewAddress,
     handleAddressSelect,
     onAddressSubmit,
+    onDeleteAddress,
   } = useAddress(reset);
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -93,6 +96,7 @@ export default function Index() {
       return;
     }
 
+    setPaymentInitFailed(false);
     setInitializingPayment(true);
     try {
       const { paymentIntent, ephemeralKey, customer } =
@@ -112,6 +116,7 @@ export default function Index() {
 
       if (error) {
         console.error("Payment sheet initialization error:", error);
+        setPaymentInitFailed(true);
         Toast.show({
           type: "error",
           text1: "Payment initialization failed",
@@ -119,6 +124,7 @@ export default function Index() {
         });
         setPaymentSheetReady(false);
       } else {
+        setPaymentInitFailed(false);
         console.log("Payment sheet initialized successfully");
         setPaymentSheetReady(true);
       }
@@ -225,11 +231,18 @@ export default function Index() {
       cart.cartItems.length > 0 &&
       !paymentSheetReady &&
       !initializingPayment &&
-      selectedAddressId
+      selectedAddressId &&
+      !paymentInitFailed
     ) {
       initializePaymentSheet();
     }
-  }, [cart, paymentSheetReady, initializingPayment, selectedAddressId]);
+  }, [
+    cart,
+    paymentSheetReady,
+    initializingPayment,
+    selectedAddressId,
+    paymentInitFailed,
+  ]);
 
   const subtotal = cart?.totalPrice || 0;
   const deliveryFee = deliveryType === "delivery" ? 3.99 : 0;
@@ -283,6 +296,7 @@ export default function Index() {
           isAddingNewAddress={isAddingNewAddress}
           setIsAddingNewAddress={setIsAddingNewAddress}
           isLoadingAddresses={isLoadingAddresses}
+          onDeleteAddress={onDeleteAddress}
         />
 
         {deliveryType === "delivery" && isAddingNewAddress && (

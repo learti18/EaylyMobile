@@ -28,17 +28,9 @@ export default function FormActions({
       <Pressable
         disabled={!position}
         onPress={position && onSubmit ? onSubmit : undefined}
-        className={`flex-1 px-4 py-3.5 rounded-xl items-center ${
-          !position ? "bg-primary-500" : "bg-purple"
-        }`}
+        className="flex-1 px-4 py-3.5 rounded-xl items-center bg-primary-500"
       >
-        <Text
-          className={`text-center font-medium ${
-            !position ? "text-white" : "text-white"
-          }`}
-        >
-          Save Address
-        </Text>
+        <Text className="text-center font-medium text-white">Save Address</Text>
       </Pressable>
     </View>
   );

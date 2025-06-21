@@ -48,7 +48,7 @@ const Basket = () => {
   const hasItems = cartData?.cartItems && cartData.cartItems.length > 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-background-100">
+    <SafeAreaView className="flex-1 bg-gray-100">
       <Header />
 
       {/* Main Content */}
@@ -101,7 +101,7 @@ const Basket = () => {
                 renderItem={({ item }) => (
                   <CartCard
                     {...item}
-                    onDelete={() => handleDeleteItem(item.id)}
+                    onDelete={() => handleDeleteItem(item.foodId)}
                   />
                 )}
                 contentContainerStyle={{

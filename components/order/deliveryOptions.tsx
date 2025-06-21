@@ -1,5 +1,5 @@
-import React from "react";
-import { Pressable, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, Pressable, Text, View } from "react-native";
 
 interface Address {
   id: number;
@@ -22,6 +22,7 @@ interface DeliveryOptionsProps {
   isAddingNewAddress: boolean;
   setIsAddingNewAddress: (isAdding: boolean) => void;
   isLoadingAddresses: boolean;
+  onDeleteAddress?: (id: number) => void;
 }
 
 export default function DeliveryOptions({
@@ -33,7 +34,46 @@ export default function DeliveryOptions({
   isAddingNewAddress,
   setIsAddingNewAddress,
   isLoadingAddresses,
+  onDeleteAddress, // Add this prop
 }: DeliveryOptionsProps) {
+  const [showDeleteFor, setShowDeleteFor] = useState<number | null>(null);
+
+  const handleLongPress = (addressId: number) => {
+    if (onDeleteAddress) {
+      setShowDeleteFor(addressId);
+    }
+  };
+
+  const handleDeletePress = (addressId: number, streetAddress: string) => {
+    Alert.alert(
+      "Delete Address",
+      `Are you sure you want to delete "${streetAddress}"?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => setShowDeleteFor(null),
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            onDeleteAddress?.(addressId);
+            setShowDeleteFor(null);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleAddressPress = (addressId: number) => {
+    if (showDeleteFor === addressId) {
+      setShowDeleteFor(null);
+    } else {
+      handleAddressSelect(addressId);
+    }
+  };
+
   return (
     <View className="bg-white rounded-xl p-4 mb-6">
       <Text className="text-lg font-semibold mb-4">Delivery Options</Text>
@@ -86,28 +126,43 @@ export default function DeliveryOptions({
           ) : (
             <View>
               {addresses.map((item) => (
-                <Pressable
-                  key={item.id.toString()}
-                  onPress={() => handleAddressSelect(item.id)}
-                  className={`p-4 rounded-lg mb-2 ${
-                    selectedAddressId === item.id
-                      ? "border border-primary-500 bg-primary-100"
-                      : "border border-gray-200"
-                  }`}
-                >
-                  <Text className="font-medium">{item.streetAddress}</Text>
-                  <Text className="text-sm text-gray-500">
-                    {item.city}, {item.state} {item.zipCode}
-                  </Text>
-                  <Text className="text-sm text-gray-500">
-                    {item.phoneNumber}
-                  </Text>
-                  {item.isDefault && (
-                    <Text className="text-xs text-purple mt-1 font-medium">
-                      Default
+                <View key={item.id.toString()} className="relative">
+                  <Pressable
+                    onPress={() => handleAddressPress(item.id)}
+                    onLongPress={() => handleLongPress(item.id)}
+                    className={`p-4 rounded-lg mb-2 ${
+                      selectedAddressId === item.id
+                        ? "border border-primary-500 bg-primary-100"
+                        : "border border-gray-200"
+                    }`}
+                  >
+                    <Text className="font-medium">{item.streetAddress}</Text>
+                    <Text className="text-sm text-gray-500">
+                      {item.city}, {item.state} {item.zipCode}
                     </Text>
+                    <Text className="text-sm text-gray-500">
+                      {item.phoneNumber}
+                    </Text>
+                    {item.isDefault && (
+                      <Text className="text-xs text-purple mt-1 font-medium">
+                        Default
+                      </Text>
+                    )}
+                  </Pressable>
+
+                  {showDeleteFor === item.id && (
+                    <Pressable
+                      onPress={() =>
+                        handleDeletePress(item.id, item.streetAddress)
+                      }
+                      className="absolute right-2 top-2 bg-red-500 rounded-full px-3 py-1"
+                    >
+                      <Text className="text-white text-xs font-medium">
+                        Delete
+                      </Text>
+                    </Pressable>
                   )}
-                </Pressable>
+                </View>
               ))}
             </View>
           )}
