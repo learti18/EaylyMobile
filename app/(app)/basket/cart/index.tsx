@@ -29,6 +29,7 @@ export default function Index() {
   );
   const [isCreatingCheckout, setIsCreatingCheckout] = useState<boolean>(false);
   const [paymentSheetReady, setPaymentSheetReady] = useState<boolean>(false);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [initializingPayment, setInitializingPayment] =
     useState<boolean>(false);
   const { refetch: refetchCart } = useFetchCart();
@@ -71,6 +72,8 @@ export default function Index() {
       });
       const { paymentIntent, ephemeralKey, customer, publishableKey } =
         response.data;
+
+      setPaymentIntentId(paymentIntent.id);
 
       return {
         paymentIntent,
@@ -146,16 +149,49 @@ export default function Index() {
       const { error } = await presentPaymentSheet();
 
       if (error) {
-        console.error("Payment sheet error:", error);
-        Alert.alert(`Error code: ${error.code}`, error.message);
+        if (error.code === "Canceled") {
+          Toast.show({
+            type: "info",
+            text1: "Payment canceled",
+            text2: "You can continue your checkout later.",
+          });
+        } else {
+          console.error("Payment sheet error:", error);
+          Toast.show({
+            type: "error",
+            text1: "Payment failed",
+            text2: error.message || "Please try again",
+          });
+        }
       } else {
-        Alert.alert("Success", "Your order is confirmed!");
-        refetchCart();
-        router.push("/(app)/basket/tracking");
+        Toast.show({
+          type: "success",
+          text1: "Payment successful",
+          text2: "Thank you for your order!",
+        });
+        await refetchCart();
+
+        if (paymentIntentId) {
+          try {
+            const orderRes = await api.get(
+              `/orders/by-payment-intent/${paymentIntentId}`
+            );
+            const orderId = orderRes.data?.id;
+
+            if (orderId) {
+              router.push(`/(app)/basket/orders/${orderId}`);
+              return;
+            }
+          } catch (err) {
+            console.error("Failed to fetch order by payment intent:", err);
+          }
+        }
+
+        router.push("/(app)/basket/orders");
       }
-    } catch (error) {
-      console.error("Error presenting payment sheet:", error);
-      Alert.alert("Error", "Failed to process payment. Please try again.");
+    } catch (err) {
+      console.error("Unexpected error during payment:", err);
+      Alert.alert("Error", "Something went wrong. Please try again.");
     } finally {
       setIsCreatingCheckout(false);
     }

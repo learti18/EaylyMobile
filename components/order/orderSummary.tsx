@@ -1,5 +1,6 @@
 import React from "react";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import OrderItem from "./orderItem";
 
 interface CartItem {
   id: number;
@@ -33,28 +34,7 @@ export default function OrderSummary({
       <Text className="text-lg font-semibold mb-4">Order Summary</Text>
 
       {cart.cartItems.map((item) => (
-        <View
-          key={item.id}
-          className="flex-row justify-between items-center mb-3 border-b border-gray-100 pb-3"
-        >
-          <View className="flex-row items-center">
-            {item.foodImageUrl && (
-              <Image
-                source={{ uri: item.foodImageUrl }}
-                className="h-14 w-14 rounded-lg mr-3"
-              />
-            )}
-            <View>
-              <Text className="font-medium text-base">{item.foodName}</Text>
-              <Text className="text-sm text-gray-500">
-                Qty: {item.quantity}
-              </Text>
-            </View>
-          </View>
-          <Text className="font-medium text-base">
-            ${(item.price * item.quantity).toFixed(2)}
-          </Text>
-        </View>
+        <OrderItem key={item.id} {...item} />
       ))}
 
       <View className="border-t border-gray-200 pt-5 gap-3 mt-3">
