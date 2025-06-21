@@ -96,7 +96,7 @@ export default function Index() {
   }, [restaurants]);
 
   return (
-    <SafeAreaView className="flex-1 justify-center items-center bg-background-100">
+    <SafeAreaView className="flex-1 justify-center items-center bg-gray-100">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* header section */}
         <Header />

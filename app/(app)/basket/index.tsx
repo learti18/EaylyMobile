@@ -7,7 +7,13 @@ import {
 } from "@/queries/useCart";
 import { useRouter } from "expo-router";
 import React from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Basket = () => {
@@ -35,10 +41,14 @@ const Basket = () => {
     deleteItemMutation(foodId);
   };
 
+  const handleNavigateToOrders = () => {
+    router.push("/(app)/basket/orders");
+  };
+
   const hasItems = cartData?.cartItems && cartData.cartItems.length > 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-background-100">
+    <SafeAreaView className="flex-1 bg-gray-100">
       <Header />
 
       {/* Main Content */}
@@ -74,6 +84,7 @@ const Basket = () => {
                   </TouchableOpacity>
                 )}
               </View>
+
               {hasItems && (
                 <Text className="text-gray-500 mt-1">
                   {cartData.cartItems.length} item
@@ -95,7 +106,7 @@ const Basket = () => {
                 )}
                 contentContainerStyle={{
                   paddingTop: 16,
-                  paddingBottom: hasItems ? 120 : 16, // Extra padding when there are items for the bottom bar
+                  paddingBottom: hasItems ? 120 : 16,
                 }}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={() => (
@@ -109,7 +120,7 @@ const Basket = () => {
                       </Text>
                       <TouchableOpacity
                         onPress={() => router.push("/home")}
-                        className="bg-primary-500 px-6 py-3 rounded-xl"
+                        className="bg-primary-500 px-6 py-3 rounded-xl mb-3"
                       >
                         <Text className="text-white font-semibold">
                           Browse Menu
@@ -123,7 +134,7 @@ const Basket = () => {
 
             {/* Fixed Bottom Bar - Only show when there are items */}
             {hasItems && (
-              <View className=" px-5">
+              <View className="px-5 pb-4">
                 <View className="flex-row justify-between items-center mb-4">
                   <Text className="text-lg font-semibold text-gray-700">
                     Total
@@ -146,6 +157,16 @@ const Basket = () => {
             )}
           </>
         )}
+        <TouchableHighlight
+          onPress={handleNavigateToOrders}
+          underlayColor="#DBD9EE"
+          className="border border-primary-500 py-4 rounded-xl mx-5"
+          activeOpacity={0.8}
+        >
+          <Text className="text-primary-500 text-lg font-semibold text-center">
+            View My Orders
+          </Text>
+        </TouchableHighlight>
       </View>
     </SafeAreaView>
   );

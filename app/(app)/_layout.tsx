@@ -6,7 +6,7 @@ import React from "react";
 import { Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const hiddenRoutes = ["restaurants", "/home/restaurants"];
+const hiddenRoutes = ["restaurants", "/home/restaurants", "basket/orders"];
 
 const AppTabLayout = () => {
   const { data: cartData } = useFetchCart();

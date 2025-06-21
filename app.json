@@ -5,39 +5,76 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icons/logo.png",
-    "scheme": "eaylymobile",
+    "scheme": "eatly",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to your location to provide delivery services.",
+        "NSLocationAlwaysUsageDescription": "This app needs access to your location to provide delivery services."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/icons/logo.png"
     },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/icons/logo.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#f5f5f5"
-        }
-      ],
-      "expo-font"
-    ],
+   "plugins": [
+  "expo-router",
+  [
+    "expo-splash-screen",
+    {
+      "image": "./assets/icons/logo.png",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#f5f5f5"
+    }
+  ],
+  "expo-font",
+  [
+    "expo-updates",
+    {
+      "enabled": true,
+      "checkOnLaunch": "ALWAYS",
+      "fallbackToCacheTimeout": 0
+    }
+  ],
+  [
+    "expo-location",
+    {
+      "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+      "accuracy": "high",
+      "distanceInterval": 10,
+      "foregroundService": {
+        "notificationChannelId": "location-channel",
+        "notificationTitle": "Location Service",
+        "notificationBody": "We are using your location to provide better services.",
+        "notificationIconColor": "#4CAF50",
+        "notificationIconDrawable": "./assets/icons/logo.png"
+      }
+    }
+  ]
+],
     "experiments": {
       "typedRoutes": true
     }
   }
 }
+     

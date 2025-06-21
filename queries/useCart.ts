@@ -1,11 +1,12 @@
 import api from "@/services/auth/api";
+import { Cart } from "@/types/cart/cart";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 
 export const useFetchCart = () => {
-  return useQuery({
+  return useQuery<Cart>({
     queryKey: ["cart"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Cart> => {
       const response = await api.get("/cart");
 
       return response.data;
