@@ -46,18 +46,17 @@ const FavoritesScreen = () => {
 
   const mappedFavoriteItems = useMemo(() => {
     const rawItems = favouriteItems?.favouriteItems || favouriteItems || [];
-    const uniqueFavourites = removeDuplicateFavourites(rawItems);
     
-    return uniqueFavourites?.map((restaurant: any) => ({
-      id: restaurant.id.toString(),
-      name: restaurant.name,
-      imageUrl: restaurant.imageUrl,
-      category: restaurant.category,
-      price: restaurant.price,
-      averagePreparationTime: restaurant.averagePreparationTime,
-      type: restaurant.type,
+    return rawItems?.map((food: any) => ({
+      id: food.id.toString(),
+      name: food.name,
+      imageUrl: food.imageUrl,
+      category: food.category,
+      price: food.price,
+      averagePreparationTime: food.averagePreparationTime,
+      type: food.type,
       isFavorite: true,
-      restaurantId: restaurant.id,
+      restaurantId: food.restaurantId,
     }));
   }, [favouriteItems]);
 
@@ -80,12 +79,6 @@ const FavoritesScreen = () => {
     refetchFavourites();
   }, []);
 
-  useEffect(() => {
-    console.log('Favourite Items:', favouriteItems);
-    console.log('Mapped Items:', mappedFavoriteItems);
-    console.log('Filtered Items:', filteredFavoriteItems);
-    console.log('Selected Category:', selectedCategory);
-  }, [favouriteItems, mappedFavoriteItems, filteredFavoriteItems, selectedCategory]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">

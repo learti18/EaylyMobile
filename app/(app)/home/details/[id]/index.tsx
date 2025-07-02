@@ -40,13 +40,7 @@ function DetailsScreen() {
     const { mutate: removeFromFavouritesMutation, isPending: isRemovingFromFavourites } = useRemoveFavouriteItem();
 
     useEffect(() => {
-        if (food) {
-            setFavorite(food.isFavorite);
-        }
-    }, [food]);
-
-    useEffect(() => {
-        if (food?.isFavorite !== undefined && food?.isFavorite !== favorite) {
+        if (food?.isFavorite !== undefined) {
             setFavorite(food.isFavorite);
         }
     }, [food?.isFavorite]);

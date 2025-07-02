@@ -6,7 +6,7 @@ import {
 } from "@/queries/useFavourite";
 import { router } from "expo-router";
 import { Heart } from "phosphor-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -31,10 +31,7 @@ const FoodCard = ({
   restaurantId,
 }: FoodProps) => {
   const [dollars, cents] = price.toFixed(2).split(".");
-  const isInitialRender = useRef(true);
 
-  const { mutate: addToFavouritesMutation } = useAddToFavourite();
-  const { mutate: removeFromFavouritesMutation } = useRemoveFavouriteItem();
   const [favorite, setFavorite] = useState(isFavorite);
   const { mutate: addToFavourites, isPending: isAddingToFavourites } =
     useAddToFavourite();
@@ -94,18 +91,7 @@ const FoodCard = ({
     }
   };
 
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    
-    if (favorite) {
-      addToFavouritesMutation(id);
-    } else {
-      removeFromFavouritesMutation(id);
-    }
-  }, [favorite]);
+
 
   return (
     <Pressable

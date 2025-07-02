@@ -1,7 +1,6 @@
 import FoodCard from "@/components/cards/FoodCard";
 import SearchBar from "@/components/inputs/SearchBar";
-import { useFetch } from "@/hooks/useFetch";
-import { getFoodsByRestaurantId } from "@/services/restaurants/restaurantsService";
+import { useGetFoodsByRestaurantId } from "@/queries/useRestaurant";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { CaretLeft, SlidersHorizontal } from "phosphor-react-native";
@@ -21,9 +20,9 @@ const RestaurantDetails = () => {
   const router = useRouter();
   const {
     data: foods,
-    loading: foodsLoading,
+    isLoading: foodsLoading,
     error: foodsError,
-  } = useFetch(() => getFoodsByRestaurantId(id));
+  } = useGetFoodsByRestaurantId(id);
   const HeaderComponent = () => (
     <View>
       <View className="flex-row items-center justify-between mt-6">
