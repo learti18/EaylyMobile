@@ -2,9 +2,11 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import Constants from "expo-constants";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -84,17 +86,20 @@ const InnerLayout = ({ hasSeenOnboarding, isLoading }: InnerLayoutProps) => {
       </View>
     );
   }
+  const stripeKey = Constants.expoConfig?.extra?.EXPO_PUBLISHABLE_STRIPE ?? "";
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(app)" />
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(onboarding)" />
-        </Stack>
-        <Toast config={toastConfig} />
-      </>
+      <StripeProvider publishableKey={stripeKey} urlScheme="yourapp">
+        <>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(app)" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(onboarding)" />
+          </Stack>
+          <Toast config={toastConfig} />
+        </>
+      </StripeProvider>
     </GestureHandlerRootView>
   );
 };

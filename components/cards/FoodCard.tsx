@@ -1,6 +1,9 @@
 import Star from "@/assets/icons/Star.svg";
 import { useAddToCart } from "@/queries/useCart";
-import { useAddToFavourite, useRemoveFavouriteItem } from "@/queries/useFavourite";
+import {
+  useAddToFavourite,
+  useRemoveFavouriteItem,
+} from "@/queries/useFavourite";
 import { router } from "expo-router";
 import { Heart } from "phosphor-react-native";
 import React, { useEffect, useRef, useState } from "react";
@@ -23,17 +26,48 @@ const FoodCard = ({
   name,
   imageUrl,
   averagePreparationTime,
-  type,
   isFavorite,
   price,
   restaurantId,
 }: FoodProps) => {
-  const [favorite, setFavorite] = useState(isFavorite);
   const [dollars, cents] = price.toFixed(2).split(".");
   const isInitialRender = useRef(true);
 
   const { mutate: addToFavouritesMutation } = useAddToFavourite();
   const { mutate: removeFromFavouritesMutation } = useRemoveFavouriteItem();
+  const [favorite, setFavorite] = useState(isFavorite);
+  const { mutate: addToFavourites, isPending: isAddingToFavourites } =
+    useAddToFavourite();
+  const { mutate: removeFromFavourites, isPending: isRemovingFromFavourites } =
+    useRemoveFavouriteItem();
+
+  // Use useEffect to update favorite when prop changes
+  useEffect(() => {
+    if (isFavorite !== favorite) {
+      setFavorite(isFavorite);
+    }
+  }, [isFavorite]);
+
+  const handleToggleFavorite = (e?: any) => {
+    // Stop propagation if event exists
+    if (e) {
+      e.stopPropagation();
+    }
+
+    // Prevent multiple clicks while an operation is in progress
+    if (isAddingToFavourites || isRemovingFromFavourites) {
+      return;
+    }
+
+    // Optimistic UI update
+    setFavorite(!favorite);
+
+    if (favorite) {
+      removeFromFavourites(id);
+    } else {
+      addToFavourites(id);
+    }
+  };
 
   const {
     mutate: addToCartMutation,
@@ -76,7 +110,9 @@ const FoodCard = ({
   return (
     <Pressable
       className="relative bg-white rounded-[34.58px] py-2 px-5"
-      onPress={() => router.push(`/home/details/${id}?restaurantId=${restaurantId}`)}
+      onPress={() =>
+        router.push(`/home/details/${id}?restaurantId=${restaurantId}`)
+      }
       style={{
         flex: 1,
         shadowColor: "#000",
@@ -88,8 +124,12 @@ const FoodCard = ({
       }}
     >
       <TouchableOpacity
-        onPress={() => setFavorite((prev) => !prev)}
+        onPress={(e) => {
+          e.stopPropagation();
+          handleToggleFavorite();
+        }}
         className="absolute top-5 right-5 p-2.5 -m-2.5"
+        disabled={isAddingToFavourites || isRemovingFromFavourites}
       >
         <Heart
           size={30}
