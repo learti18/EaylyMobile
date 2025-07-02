@@ -39,7 +39,7 @@ export const getFavouriteRestaurantId = async (
     favouriteId: number
 ): Promise<Food[]> => {
     try {
-        const response = await api.get(`/favourites/${favouriteId}/foods`);
+        const response = await api.get(`/favorite-foods/${favouriteId}/foods`);
 
         if (response.status !== 200) {
             // @ts-ignore

@@ -1,8 +1,9 @@
 import Star from "@/assets/icons/Star.svg";
 import { useAddToCart } from "@/queries/useCart";
+import { useAddToFavourite, useRemoveFavouriteItem } from "@/queries/useFavourite";
 import { router } from "expo-router";
 import { Heart } from "phosphor-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -29,6 +30,10 @@ const FoodCard = ({
 }: FoodProps) => {
   const [favorite, setFavorite] = useState(isFavorite);
   const [dollars, cents] = price.toFixed(2).split(".");
+  const isInitialRender = useRef(true);
+
+  const { mutate: addToFavouritesMutation } = useAddToFavourite();
+  const { mutate: removeFromFavouritesMutation } = useRemoveFavouriteItem();
 
   const {
     mutate: addToCartMutation,
@@ -54,6 +59,19 @@ const FoodCard = ({
       });
     }
   };
+
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    
+    if (favorite) {
+      addToFavouritesMutation(id);
+    } else {
+      removeFromFavouritesMutation(id);
+    }
+  }, [favorite]);
 
   return (
     <Pressable

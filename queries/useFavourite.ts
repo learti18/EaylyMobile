@@ -25,6 +25,7 @@ export const useAddToFavourite = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favourites"] });
+      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
       Toast.show({
         type: "success",
         text1: "Item added to favourites",
@@ -44,6 +45,7 @@ export const useClearFavourites = () => {
       queryClient.setQueryData(["favourites"], { favouriteItems: [], totalPrice: 0 });
 
       queryClient.invalidateQueries({ queryKey: ["favourites"] });
+      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
       Toast.show({
         type: "success",
         text1: "Favourites cleared successfully!",
@@ -67,30 +69,12 @@ export const useRemoveFavouriteItem = () => {
       return response.data;
     },
     onSuccess: (data, foodId) => {
-      queryClient.setQueryData(["favourites"], (oldData: any) => {
-        if (!oldData) return oldData;
-
-        const updatedFavouriteItems = oldData.favouriteItems.filter(
-          (item: any) => item.id !== foodId
-        );
-
-        const totalPrice = updatedFavouriteItems.reduce(
-          (sum: number, item: any) => sum + item.price * item.quantity,
-          0
-        );
-
-        return {
-          ...oldData,
-          favouriteItems: updatedFavouriteItems,
-          totalPrice,
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: ["favourites"] });
+      queryClient.invalidateQueries({ queryKey: ["restaurants"] });
       Toast.show({
         type: "delete",
         text1: "Item removed from favourites",
       });
-
-      queryClient.invalidateQueries({ queryKey: ["favourites"] });
     },
     onError: (error) => {
       Toast.show({

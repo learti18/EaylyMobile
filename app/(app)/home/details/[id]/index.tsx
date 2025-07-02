@@ -1,10 +1,11 @@
 import Star from "@/assets/icons/Star.svg";
 import ButtonHighlight from "@/components/buttons/ButtonHighlight";
 import { useAddToCart } from "@/queries/useCart";
+import { useAddToFavourite, useRemoveFavouriteItem } from "@/queries/useFavourite";
 import { useGetFoodById } from "@/queries/useFood";
 import { router, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, Heart } from "phosphor-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 interface Ingridient {
@@ -18,6 +19,14 @@ function DetailsScreen() {
     const [quantity, setQuantity] = useState(1);
     const [favorite, setFavorite] = useState(false);
     const { mutate: addToCart, isPending } = useAddToCart();
+    const { mutate: addToFavouritesMutation } = useAddToFavourite();
+    const { mutate: removeFromFavouritesMutation } = useRemoveFavouriteItem();
+
+    useEffect(() => {
+        if (food) {
+            setFavorite(food.isFavorite);
+        }
+    }, [food]);
 
     if (isLoading) {
         return <ActivityIndicator size="large" color="#6C5FBC" />;
@@ -40,7 +49,16 @@ function DetailsScreen() {
     }
 
     function handleToggleFavorite() {
-        setFavorite((f) => !f);
+        if (!food) return;
+        
+        const newFavoriteState = !favorite;
+        setFavorite(newFavoriteState);
+        
+        if (newFavoriteState) {
+            addToFavouritesMutation(food.id);
+        } else {
+            removeFromFavouritesMutation(food.id);
+        }
     }
 
     function renderIngredient(ingredient: Ingridient) {

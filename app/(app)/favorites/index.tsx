@@ -16,13 +16,24 @@ import {
   View
 } from 'react-native';
 
-
 const FavoritesScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>('All');
 
   const { data: restaurantCategories } = useGetRestaurantCategories();
-  const { data: favouriteItems } = useFetchFavourites();
+  const { data: favouriteItems, refetch: refetchFavourites } = useFetchFavourites();
+
+  const removeDuplicateFavourites = (items: any[]) => {
+    if (!items || !Array.isArray(items)) return [];
+    
+    const seen = new Set();
+    return items.filter((item) => {
+      if (!item || !item.id) return false;
+      const duplicate = seen.has(item.id);
+      seen.add(item.id);
+      return !duplicate;
+    });
+  };
 
   const categories = [
     ...(restaurantCategories ?? []),
@@ -34,10 +45,13 @@ const FavoritesScreen = () => {
   ];
 
   const mappedFavoriteItems = useMemo(() => {
-    return favouriteItems?.map((restaurant: any) => ({
+    const rawItems = favouriteItems?.favouriteItems || favouriteItems || [];
+    const uniqueFavourites = removeDuplicateFavourites(rawItems);
+    
+    return uniqueFavourites?.map((restaurant: any) => ({
       id: restaurant.id.toString(),
       name: restaurant.name,
-      image: restaurant.imageUrl,
+      imageUrl: restaurant.imageUrl,
       category: restaurant.category,
       price: restaurant.price,
       averagePreparationTime: restaurant.averagePreparationTime,
@@ -48,14 +62,14 @@ const FavoritesScreen = () => {
   }, [favouriteItems]);
 
   const filteredFavoriteItems = useMemo(() => {
-    let items = mappedFavoriteItems;
+    let items = mappedFavoriteItems || [];
 
     if (selectedCategory && selectedCategory !== 'All') {
-      items = items?.filter((item: any) => item.category === selectedCategory);
+      items = items.filter((item: any) => item.category === selectedCategory);
     }
 
     if (searchText) {
-      items = items?.filter((item: any) =>
+      items = items.filter((item: any) =>
         item.name.toLowerCase().includes(searchText.toLowerCase())
       );
     }
@@ -63,8 +77,15 @@ const FavoritesScreen = () => {
   }, [searchText, selectedCategory, mappedFavoriteItems]);
 
   useEffect(() => {
-    console.log(favouriteItems);
-  }, [favouriteItems]);
+    refetchFavourites();
+  }, []);
+
+  useEffect(() => {
+    console.log('Favourite Items:', favouriteItems);
+    console.log('Mapped Items:', mappedFavoriteItems);
+    console.log('Filtered Items:', filteredFavoriteItems);
+    console.log('Selected Category:', selectedCategory);
+  }, [favouriteItems, mappedFavoriteItems, filteredFavoriteItems, selectedCategory]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
@@ -106,9 +127,9 @@ const FavoritesScreen = () => {
           <Text className="text-2xl font-bold text-gray-800 px-5 pt-2.5 pb-4">Most Favourite</Text>
           <View className="flex-row flex-wrap justify-between px-5 pt-1">
             {filteredFavoriteItems?.length && filteredFavoriteItems?.length > 0 ? (
-              filteredFavoriteItems?.map((item: Food) => (
+              filteredFavoriteItems?.map((item: any, index: number) => (
                 <FoodCard
-                  key={item.id}
+                  key={index}
                   restaurantId={item.restaurantId}
                   id={item.id}
                   name={item.name}
