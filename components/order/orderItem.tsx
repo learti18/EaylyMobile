@@ -10,6 +10,7 @@ const OrderItem = ({ foodImageUrl, foodName, quantity, price }: CartItem) => {
           <Image
             source={{ uri: foodImageUrl }}
             className="h-14 w-14 rounded-lg mr-3"
+            resizeMode="contain"
           />
         )}
         <View>

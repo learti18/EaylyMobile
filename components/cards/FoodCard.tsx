@@ -9,6 +9,7 @@ import { Heart } from "phosphor-react-native";
 import React, { useEffect, useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import Badge, { BadgeType } from "../generic/badge";
 
 interface FoodProps {
   id: number;
@@ -29,6 +30,7 @@ const FoodCard = ({
   isFavorite,
   price,
   restaurantId,
+  type,
 }: FoodProps) => {
   const [dollars, cents] = price.toFixed(2).split(".");
 
@@ -91,11 +93,9 @@ const FoodCard = ({
     }
   };
 
-
-
   return (
     <Pressable
-      className="relative bg-white rounded-[34.58px] py-2 px-5"
+      className="relative bg-white rounded-[30px] py-2 px-5"
       onPress={() =>
         router.push(`/home/details/${id}?restaurantId=${restaurantId}`)
       }
@@ -124,19 +124,22 @@ const FoodCard = ({
         />
       </TouchableOpacity>
 
-      <View className="pt-8 justify-center items-center mx-auto">
+      <View className="pt-8 mb-1 justify-center items-center mx-auto">
         <Image
           source={{ uri: imageUrl }}
-          className="w-36 h-36 rounded-full" // Slightly smaller to fit better
-          resizeMode="cover"
+          className="w-36 h-36 rounded-full object-contain"
+          resizeMode="contain"
         />
       </View>
-
-      <Text className="font-semibold text-2xl pt-1" numberOfLines={1}>
+      <Badge type={type as BadgeType} />
+      <Text
+        className="font-semibold capitalize text-2xl pt-1"
+        numberOfLines={1}
+      >
         {name}
       </Text>
 
-      <View className="flex-row items-center justify-between mt-1">
+      <View className="flex-row items-center mt-1">
         <Text className="text-gray-400">{averagePreparationTime}min •</Text>
         <View className="flex-row items-center gap-1">
           <Star width={20} height={20} />
@@ -144,7 +147,7 @@ const FoodCard = ({
         </View>
       </View>
 
-      <View className="flex-row items-center justify-between mt-3 pb-5">
+      <View className="flex-row items-center justify-between mt-1 pb-5">
         <Text className="text-gray-900 text-2xl font-semibold pt-2">
           ${dollars}
           <Text className="text-gray-500 text-lg">.{cents}</Text>

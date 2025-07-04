@@ -37,7 +37,11 @@ const RestaurantDetails = () => {
 
       {/* searchbar and filtering*/}
       <View className="flex-row gap-x-4 mt-8 mb-8">
-        <SearchBar placeholder="Search for food" value="" onChangeText={() => {}} />
+        <SearchBar
+          placeholder="Search for food"
+          value=""
+          onChangeText={() => {}}
+        />
         <TouchableOpacity
           onPress={() => console.log("pressed")}
           className="items-center justify-center px-4 rounded-2xl bg-primary-500"

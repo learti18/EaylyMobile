@@ -22,25 +22,29 @@ export default function Badge({ type }: BadgeProps) {
       color: "#309D5B",
     },
   };
+  const currentStyle = style[type] || {
+    backgroundColor: "#F3F4F6",
+    color: "#6B7280",
+  };
   return (
     <View
       style={{
-        backgroundColor: style[type].backgroundColor,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
+        backgroundColor: currentStyle.backgroundColor,
+        paddingHorizontal: 7,
+        paddingVertical: 3,
+        borderRadius: 6,
         alignItems: "center",
         alignSelf: "flex-start",
       }}
     >
       <Text
         style={{
-          color: style[type].color,
-          fontSize: 12,
-          fontWeight: "500",
+          color: currentStyle.color,
+          fontSize: 11,
+          fontWeight: "400",
         }}
       >
-        {type}
+        {type || "Unknown"}
       </Text>
     </View>
   );

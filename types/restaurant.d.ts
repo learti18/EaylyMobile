@@ -4,14 +4,16 @@ interface Restaurant {
   description: string;
   address: string;
   imageUrl: string;
+  averagePreparationTime: number;
+  foodType: string;
   isVerified: boolean;
   category: string;
 }
 
-type Category = {
+interface Category {
   id: number;
   name: string;
-};
+}
 
 interface CategoryButtonProps {
   onPress?: () => void;
@@ -21,9 +23,11 @@ interface CategoryButtonProps {
 }
 
 interface Food {
+  calories: ReactNode;
   id: number;
   name: string;
   price: number;
+  slogan: string;
   imageUrl: string;
   averagePreparationTime: number;
   type: string;

@@ -18,6 +18,16 @@ import {
   View,
 } from "react-native";
 
+interface RestaurantResponse {
+  items: Restaurant[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 export default function Index() {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(
@@ -26,10 +36,10 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const {
-    data: restaurants,
+    data: restaurantResponse,
     loading: restaurantsLoading,
     error: restaurantsError,
-  } = useFetch<Restaurant[]>(() => getRestaurants());
+  } = useFetch<RestaurantResponse>(() => getRestaurants());
   const {
     data: restaurantCategories,
     loading: categoriesLoading,
@@ -37,13 +47,14 @@ export default function Index() {
   } = useFetch<Category[]>(() => getRestaurantCategories());
 
   const filterRestaurants = (
-    restaurants: Restaurant[] | null,
+    restaurantResponse: RestaurantResponse | null,
     categoryId: number | null,
     query: string
   ): Restaurant[] => {
-    if (!restaurants) return [];
+    if (!restaurantResponse?.items || !Array.isArray(restaurantResponse.items))
+      return [];
 
-    let filtered = [...restaurants];
+    let filtered = [...restaurantResponse.items];
 
     if (categoryId !== null && categoryId !== 0) {
       const selectedCategory = restaurantCategories?.find(
@@ -68,32 +79,40 @@ export default function Index() {
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    const filtered = filterRestaurants(restaurants, activeCategory, text);
+    const filtered = filterRestaurants(
+      restaurantResponse,
+      activeCategory,
+      text
+    );
     setFilteredRestaurants(filtered);
   };
 
   const handleCategoryPress = (categoryId: number): void => {
     if (activeCategory === categoryId) {
       setActiveCategory(null);
-      const filtered = filterRestaurants(restaurants, null, searchQuery);
+      const filtered = filterRestaurants(restaurantResponse, null, searchQuery);
       setFilteredRestaurants(filtered);
     } else {
       setActiveCategory(categoryId);
-      const filtered = filterRestaurants(restaurants, categoryId, searchQuery);
+      const filtered = filterRestaurants(
+        restaurantResponse,
+        categoryId,
+        searchQuery
+      );
       setFilteredRestaurants(filtered);
     }
   };
 
   useEffect(() => {
-    if (restaurants) {
+    if (restaurantResponse) {
       const filtered = filterRestaurants(
-        restaurants,
+        restaurantResponse,
         activeCategory,
         searchQuery
       );
       setFilteredRestaurants(filtered);
     }
-  }, [restaurants]);
+  }, [restaurantResponse]);
 
   return (
     <SafeAreaView className="flex-1 justify-center items-center bg-gray-100">
@@ -127,7 +146,7 @@ export default function Index() {
             </View>
           ) : (
             <FlatList
-              data={restaurantCategories}
+              data={restaurantCategories || []}
               keyExtractor={(item) => item.id.toString()}
               horizontal
               renderItem={({ item }) => (
@@ -160,13 +179,8 @@ export default function Index() {
                       (cat) => cat.id === activeCategory
                     )?.name || "Restaurants"}
               </Text>
-              {/* Show debug info for development */}
-              {/* <Text className="px-5 mb-2 text-gray-500">
-                Found {filteredRestaurants.length} restaurant(s) 
-                {activeCategory !== null ? ` in category ${activeCategory}` : ""}
-              </Text> */}
               <FlatList
-                data={filteredRestaurants}
+                data={filteredRestaurants || []}
                 keyExtractor={(item) => item.id.toString()}
                 horizontal
                 renderItem={({ item }) => <RestaurantCard {...item} />}

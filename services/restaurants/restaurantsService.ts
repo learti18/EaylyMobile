@@ -1,6 +1,16 @@
 import api from "../auth/api";
 
-export const getRestaurants = async (): Promise<Restaurant[]> => {
+interface RestaurantResponse {
+  items: Restaurant[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export const getRestaurants = async (): Promise<RestaurantResponse> => {
   try {
     const response = await api.get("/restaurants");
 
@@ -42,7 +52,10 @@ export const getRestaurantCategories = async (): Promise<Category[]> => {
 
     if (response.status !== 200) {
       // @ts-ignore
-      throw new Error("Failed to fetch restaurant categories", response.statusText);
+      throw new Error(
+        "Failed to fetch restaurant categories",
+        response.statusText
+      );
     }
     const data = await response.data;
     return data;

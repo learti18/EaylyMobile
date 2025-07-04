@@ -24,7 +24,7 @@ export const useInfiniteOrders = (filters: {
       if (orderStatus) queryParams += `&orderStatus=${orderStatus}`;
       if (paymentStatus) queryParams += `&paymentStatus=${paymentStatus}`;
 
-      const response = await api.get(`/orders?${queryParams}`);
+      const response = await api.get(`/orders/user?${queryParams}`);
       return response.data;
     },
     getNextPageParam: (lastPage, allPages) => {

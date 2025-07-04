@@ -1,4 +1,5 @@
 import { useUpdateCartItem } from "@/queries/useCart";
+import { CartItem } from "@/types/cart/cart";
 import { Trash } from "phosphor-react-native";
 import React, { useRef } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -93,7 +94,7 @@ const CartCard = ({
               <Image
                 source={{ uri: foodImageUrl }}
                 className="w-20 h-20 rounded-full"
-                resizeMode="cover"
+                resizeMode="contain"
               />
               <View>
                 <Text className="text-lg font-semibold">{foodName}</Text>

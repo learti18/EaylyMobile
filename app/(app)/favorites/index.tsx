@@ -1,31 +1,25 @@
-import CategoryButton from '@/components/buttons/CategoryButton';
-import FoodCard from '@/components/cards/FoodCard';
-import Header from '@/components/generic/header';
-import { useFetchFavourites } from '@/queries/useFavourite';
-import { useGetRestaurantCategories } from '@/queries/useRestaurant';
-import {
-  MagnifyingGlass
-} from 'phosphor-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  FlatList,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  View
-} from 'react-native';
+import CategoryButton from "@/components/buttons/CategoryButton";
+import FoodCard from "@/components/cards/FoodCard";
+import Header from "@/components/generic/header";
+import { useFetchFavourites } from "@/queries/useFavourite";
+import { useGetRestaurantCategories } from "@/queries/useRestaurant";
+import { MagnifyingGlass } from "phosphor-react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { FlatList, SafeAreaView, Text, TextInput, View } from "react-native";
 
 const FavoritesScreen = () => {
-  const [searchText, setSearchText] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>('All');
+  const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    "All"
+  );
 
   const { data: restaurantCategories } = useGetRestaurantCategories();
-  const { data: favouriteItems, refetch: refetchFavourites } = useFetchFavourites();
+  const { data: favouriteItems, refetch: refetchFavourites } =
+    useFetchFavourites();
 
   const removeDuplicateFavourites = (items: any[]) => {
     if (!items || !Array.isArray(items)) return [];
-    
+
     const seen = new Set();
     return items.filter((item) => {
       if (!item || !item.id) return false;
@@ -39,14 +33,14 @@ const FavoritesScreen = () => {
     ...(restaurantCategories ?? []),
     {
       id: 0,
-      name: 'All',
-      imageUrl: '',
+      name: "All",
+      imageUrl: "",
     },
   ];
 
   const mappedFavoriteItems = useMemo(() => {
     const rawItems = favouriteItems?.favouriteItems || favouriteItems || [];
-    
+
     return rawItems?.map((food: any) => ({
       id: food.id.toString(),
       name: food.name,
@@ -63,7 +57,7 @@ const FavoritesScreen = () => {
   const filteredFavoriteItems = useMemo(() => {
     let items = mappedFavoriteItems || [];
 
-    if (selectedCategory && selectedCategory !== 'All') {
+    if (selectedCategory && selectedCategory !== "All") {
       items = items.filter((item: any) => item.category === selectedCategory);
     }
 
@@ -79,10 +73,9 @@ const FavoritesScreen = () => {
     refetchFavourites();
   }, []);
 
-
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 20 }}>
+      <View className="flex-1">
         <Header />
 
         {/* Search Section */}
@@ -98,46 +91,67 @@ const FavoritesScreen = () => {
           </View>
         </View>
 
-        {/* Categories Scroll */}
+        {/* Main Content with Categories Header */}
         <FlatList
-          data={categories}
+          data={filteredFavoriteItems || []}
           keyExtractor={(item) => item.id.toString()}
-          horizontal
+          numColumns={2}
           renderItem={({ item }) => (
-            <CategoryButton
-              category={item}
-              isActive={selectedCategory === item.name}
-              onPress={() => setSelectedCategory(item.name)}
+            <FoodCard
+              restaurantId={item.restaurantId}
+              id={item.id}
+              name={item.name}
+              imageUrl={item.imageUrl}
+              averagePreparationTime={item.averagePreparationTime}
+              type={item.type}
+              isFavorite={true}
+              price={item.price}
             />
           )}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 20, paddingRight: 12 }}
-          className="flex-grow"
-        />
+          ListHeaderComponent={() => (
+            <View>
+              {/* Categories Scroll */}
+              <FlatList
+                data={categories}
+                keyExtractor={(item) => item.id.toString()}
+                horizontal
+                renderItem={({ item }) => (
+                  <CategoryButton
+                    category={item}
+                    isActive={selectedCategory === item.name}
+                    onPress={() => setSelectedCategory(item.name)}
+                  />
+                )}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingLeft: 20, paddingRight: 12 }}
+                style={{ marginBottom: 16 }}
+              />
 
-        {/* Main Content Area */}
-        <View className=" z-10 pt-2.5">
-          <Text className="text-2xl font-bold text-gray-800 px-5 pt-2.5 pb-4">Most Favourite</Text>
-          <View className="flex-row flex-wrap justify-between px-5 pt-1">
-            {filteredFavoriteItems?.length && filteredFavoriteItems?.length > 0 ? (
-              filteredFavoriteItems?.map((item: any, index: number) => (
-                <FoodCard
-                  key={index}
-                  restaurantId={item.restaurantId}
-                  id={item.id}
-                  name={item.name}
-                  imageUrl={item.imageUrl}
-                  averagePreparationTime={item.averagePreparationTime}
-                  type={item.type}
-                  isFavorite={true}
-                  price={item.price} />
-              ))
-            ) : (
-              <Text className="text-center text-gray-500 w-full py-10">No items match your filter.</Text>
-            )}
-          </View>
-        </View>
-      </ScrollView>
+              {/* Section Title */}
+              <Text className="text-2xl font-bold text-gray-800 px-5 pb-4">
+                Most Favourite
+              </Text>
+            </View>
+          )}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: 20,
+          }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            marginBottom: 16,
+            gap: 16,
+          }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <View className="items-center justify-center py-10">
+              <Text className="text-center text-gray-500">
+                No items match your filter.
+              </Text>
+            </View>
+          )}
+        />
+      </View>
     </SafeAreaView>
   );
 };

@@ -70,7 +70,7 @@ const Orders = () => {
   }, [orderStatusFilter, paymentStatusFilter]);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <SafeAreaView className="flex-1 bg-gray-100 mt-10">
       {/* Header */}
       <View className="px-5 py-4 flex-row justify-between items-center">
         <View>

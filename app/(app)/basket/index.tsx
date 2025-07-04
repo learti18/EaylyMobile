@@ -108,6 +108,7 @@ const Basket = () => {
                   paddingTop: 16,
                   paddingBottom: hasItems ? 120 : 16,
                 }}
+                ItemSeparatorComponent={() => <View className="h-4" />}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={() => (
                   <View className="flex-1 items-center justify-center py-20">
